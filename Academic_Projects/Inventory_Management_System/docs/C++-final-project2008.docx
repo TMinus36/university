@@ -1,0 +1,292 @@
+# C++ Final Project: Inventory Tracker
+
+## Overview
+
+This C++ project simulates an Inventory Management System designed for small businesses. It introduces essential concepts in C++ such as:
+
+* Class definition and usage
+* Vectors for dynamic storage
+* File input/output with `fstream`
+* Control structures and basic error handling
+* Command-line interface
+
+---
+
+## Project Requirements
+
+### Functional Requirements
+
+* Add a new product to inventory
+* Display all products
+* Search a product by ID
+* Edit product details
+* Delete a product
+* Save products to a file (`inventory.txt`)
+* Load products from a file (`inventory.txt`)
+* Exit the application
+
+### Technical Requirements
+
+* Use of `Product` and `InventoryManager` classes
+* Use `std::vector<Product>` for in-memory storage
+* File operations using `ofstream` and `ifstream`
+* Modular design with separate header and implementation files
+
+---
+
+## Directory Structure
+
+```
+InventoryTracker/
+├── Product.h
+├── Product.cpp
+├── InventoryManager.h
+├── InventoryManager.cpp
+├── main.cpp
+├── CPLUSPLUS.md
+└── inventory.txt (runtime output)
+```
+
+---
+
+## Line-by-Line Code Walkthrough
+
+### Product.h
+
+```cpp
+#ifndef PRODUCT_H
+#define PRODUCT_H
+
+#include <string>
+
+class Product {
+private:
+    std::string id;
+    std::string name;
+    int quantity;
+    double price;
+
+public:
+    Product();
+    Product(std::string, std::string, int, double);
+
+    std::string getId() const;
+    std::string getName() const;
+    int getQuantity() const;
+    double getPrice() const;
+
+    void setName(std::string);
+    void setQuantity(int);
+    void setPrice(double);
+
+    void display() const;
+};
+
+#endif
+```
+
+---
+
+### Product.cpp
+
+```cpp
+#include "Product.h"
+#include <iostream>
+
+Product::Product() : id(""), name(""), quantity(0), price(0.0) {}
+
+Product::Product(std::string id, std::string name, int quantity, double price)
+    : id(id), name(name), quantity(quantity), price(price) {}
+
+std::string Product::getId() const { return id; }
+std::string Product::getName() const { return name; }
+int Product::getQuantity() const { return quantity; }
+double Product::getPrice() const { return price; }
+
+void Product::setName(std::string name) { this->name = name; }
+void Product::setQuantity(int quantity) { this->quantity = quantity; }
+void Product::setPrice(double price) { this->price = price; }
+
+void Product::display() const {
+    std::cout << "ID: " << id
+              << " | Name: " << name
+              << " | Quantity: " << quantity
+              << " | Price: $" << price << std::endl;
+}
+```
+
+---
+
+### InventoryManager.h
+
+```cpp
+#ifndef INVENTORY_MANAGER_H
+#define INVENTORY_MANAGER_H
+
+#include "Product.h"
+#include <vector>
+
+class InventoryManager {
+private:
+    std::vector<Product> products;
+
+public:
+    void addProduct(const Product&);
+    void showAll() const;
+    int findProductIndex(const std::string&) const;
+    void searchById(const std::string&) const;
+    void editProduct(const std::string&);
+    void deleteProduct(const std::string&);
+    void saveToFile(const std::string&) const;
+    void loadFromFile(const std::string&);
+};
+
+#endif
+```
+
+---
+
+### InventoryManager.cpp
+
+```cpp
+#include "InventoryManager.h"
+#include <iostream>
+#include <fstream>
+
+void InventoryManager::addProduct(const Product& p) {
+    products.push_back(p);
+}
+
+void InventoryManager::showAll() const {
+    if (products.empty()) {
+        std::cout << "No products available.\n";
+        return;
+    }
+    for (const auto& p : products) {
+        p.display();
+    }
+}
+
+int InventoryManager::findProductIndex(const std::string& id) const {
+    for (size_t i = 0; i < products.size(); ++i) {
+        if (products[i].getId() == id) return i;
+    }
+    return -1;
+}
+
+void InventoryManager::searchById(const std::string& id) const {
+    int index = findProductIndex(id);
+    if (index != -1) products[index].display();
+    else std::cout << "Product not found.\n";
+}
+
+void InventoryManager::editProduct(const std::string& id) {
+    int index = findProductIndex(id);
+    if (index != -1) {
+        std::string name;
+        int quantity;
+        double price;
+
+        std::cout << "New Name: ";
+        std::cin >> name;
+        std::cout << "New Quantity: ";
+        std::cin >> quantity;
+        std::cout << "New Price: ";
+        std::cin >> price;
+
+        products[index].setName(name);
+        products[index].setQuantity(quantity);
+        products[index].setPrice(price);
+    } else {
+        std::cout << "Product not found.\n";
+    }
+}
+
+void InventoryManager::deleteProduct(const std::string& id) {
+    int index = findProductIndex(id);
+    if (index != -1) {
+        products.erase(products.begin() + index);
+        std::cout << "Product deleted.\n";
+    } else {
+        std::cout << "Product not found.\n";
+    }
+}
+
+void InventoryManager::saveToFile(const std::string& filename) const {
+    std::ofstream out(filename);
+    for (const auto& p : products) {
+        out << p.getId() << "," << p.getName() << "," << p.getQuantity() << "," << p.getPrice() << "\n";
+    }
+    std::cout << "Saved to file.\n";
+}
+
+void InventoryManager::loadFromFile(const std::string& filename) {
+    std::ifstream in(filename);
+    std::string id, name;
+    int quantity;
+    double price;
+
+    products.clear();
+    while (in >> id >> name >> quantity >> price) {
+        products.emplace_back(id, name, quantity, price);
+    }
+    std::cout << "Loaded from file.\n";
+}
+```
+
+---
+
+### main.cpp
+
+```cpp
+#include "InventoryManager.h"
+#include <iostream>
+
+int main() {
+    InventoryManager manager;
+    std::string choice, id, name;
+    int quantity;
+    double price;
+
+    while (true) {
+        std::cout << "\n== Inventory Tracker ==\n";
+        std::cout << "1. Add Product\n2. Show All\n3. Search by ID\n4. Edit Product\n5. Delete Product\n6. Save to File\n7. Load from File\n8. Exit\nChoice: ";
+        std::cin >> choice;
+
+        if (choice == "1") {
+            std::cout << "Enter ID: "; std::cin >> id;
+            std::cout << "Enter Name: "; std::cin >> name;
+            std::cout << "Enter Quantity: "; std::cin >> quantity;
+            std::cout << "Enter Price: "; std::cin >> price;
+            manager.addProduct(Product(id, name, quantity, price));
+        } else if (choice == "2") {
+            manager.showAll();
+        } else if (choice == "3") {
+            std::cout << "Enter ID: "; std::cin >> id;
+            manager.searchById(id);
+        } else if (choice == "4") {
+            std::cout << "Enter ID to edit: "; std::cin >> id;
+            manager.editProduct(id);
+        } else if (choice == "5") {
+            std::cout << "Enter ID to delete: "; std::cin >> id;
+            manager.deleteProduct(id);
+        } else if (choice == "6") {
+            manager.saveToFile("inventory.txt");
+        } else if (choice == "7") {
+            manager.loadFromFile("inventory.txt");
+        } else if (choice == "8") {
+            break;
+        } else {
+            std::cout << "Invalid option.\n";
+        }
+    }
+
+    return 0;
+}
+```
+
+---
+
+## 🧠 Summary
+
+This C++ project builds core competency in class-based programming and file handling. It's structured for easy enhancement—like adding categories, inventory warnings, or sorting.

@@ -1,0 +1,157 @@
+# PostgreSQL Final Project: Company HR Database
+
+## Overview
+
+This final SQL project reinforces your understanding of relational database design and PostgreSQL syntax. You'll build a fully normalized HR database with interrelated tables and execute complex queries to analyze the data.
+
+### Key Concepts Covered
+
+* Schema design and normalization
+* `PRIMARY KEY`, `FOREIGN KEY`, `NOT NULL`, `UNIQUE`
+* CRUD operations (`INSERT`, `SELECT`, `UPDATE`, `DELETE`)
+* `JOIN`, `GROUP BY`, `HAVING`, and subqueries
+* Views and analytical queries
+
+---
+
+## Project Requirements
+
+### Functional Requirements
+
+* Create tables for employees, departments, and salaries
+* Establish relational integrity via foreign keys
+* Populate tables with at least 5-10 rows each
+* Implement the following queries:
+
+  * List employees with department name and salary
+  * List highest paid employees per department
+  * Show departments with average salary over \$75,000
+  * View of employees earning more than \$100,000
+
+### Technical Requirements
+
+* Use PostgreSQL syntax
+* Create view `high_earners`
+* Use appropriate data types and constraints
+
+---
+
+## Directory Structure
+
+```
+HRDatabaseProject/
+├── init_hr.sql
+├── queries.sql
+├── POSTGRESQL.md
+```
+
+---
+
+## Line-by-Line SQL Code Walkthrough
+
+### init\_hr.sql
+
+```sql
+-- Drop existing tables for clean re-runs
+DROP TABLE IF EXISTS salaries;
+DROP TABLE IF EXISTS employees;
+DROP TABLE IF EXISTS departments;
+
+-- Department table
+CREATE TABLE departments (
+    dept_id SERIAL PRIMARY KEY,
+    dept_name VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Employee table
+CREATE TABLE employees (
+    emp_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    hire_date DATE NOT NULL,
+    dept_id INTEGER REFERENCES departments(dept_id)
+);
+
+-- Salary table
+CREATE TABLE salaries (
+    emp_id INTEGER PRIMARY KEY,
+    base_salary NUMERIC(10, 2) NOT NULL CHECK (base_salary > 0),
+    bonus NUMERIC(10, 2) DEFAULT 0,
+    FOREIGN KEY (emp_id) REFERENCES employees(emp_id)
+);
+
+-- Insert sample departments
+INSERT INTO departments (dept_name) VALUES
+('Engineering'),
+('Marketing'),
+('HR'),
+('Finance');
+
+-- Insert sample employees
+INSERT INTO employees (name, hire_date, dept_id) VALUES
+('Alice Johnson', '2020-03-01', 1),
+('Bob Smith', '2018-07-15', 2),
+('Clara Doe', '2019-10-10', 3),
+('David King', '2017-05-22', 1),
+('Emma Stone', '2021-02-17', 4);
+
+-- Insert sample salaries
+INSERT INTO salaries (emp_id, base_salary, bonus) VALUES
+(1, 95000, 5000),
+(2, 72000, 3000),
+(3, 65000, 2000),
+(4, 105000, 10000),
+(5, 88000, 4000);
+```
+
+---
+
+### queries.sql
+
+```sql
+-- 1. List employees with department and total salary
+SELECT e.name, d.dept_name, s.base_salary + s.bonus AS total_salary
+FROM employees e
+JOIN departments d ON e.dept_id = d.dept_id
+JOIN salaries s ON e.emp_id = s.emp_id;
+
+-- 2. Highest paid employee(s) per department
+SELECT d.dept_name, e.name, s.base_salary + s.bonus AS total_salary
+FROM employees e
+JOIN salaries s ON e.emp_id = s.emp_id
+JOIN departments d ON e.dept_id = d.dept_id
+WHERE (e.emp_id, s.base_salary + s.bonus) IN (
+    SELECT e2.emp_id, MAX(s2.base_salary + s2.bonus)
+    FROM employees e2
+    JOIN salaries s2 ON e2.emp_id = s2.emp_id
+    GROUP BY e2.dept_id
+);
+
+-- 3. Departments with average salary over $75,000
+SELECT d.dept_name, AVG(s.base_salary + s.bonus) AS avg_salary
+FROM employees e
+JOIN salaries s ON e.emp_id = s.emp_id
+JOIN departments d ON e.dept_id = d.dept_id
+GROUP BY d.dept_name
+HAVING AVG(s.base_salary + s.bonus) > 75000;
+
+-- 4. Create view of employees earning more than $100,000
+CREATE OR REPLACE VIEW high_earners AS
+SELECT e.name, d.dept_name, s.base_salary + s.bonus AS total_salary
+FROM employees e
+JOIN salaries s ON e.emp_id = s.emp_id
+JOIN departments d ON e.dept_id = d.dept_id
+WHERE s.base_salary + s.bonus > 100000;
+
+-- 5. Select from view
+SELECT * FROM high_earners;
+```
+
+---
+
+## 🧠 Summary
+
+This SQL project walks you through a complete HR database design lifecycle, from schema to query optimization. It mirrors real-world database needs in enterprise environments and provides a practical base for advanced PostgreSQL development, BI dashboards, or ORM integration.
+
+Congratulations — you’ve now completed all three core language projects!
+
+Feel free to test all queries using `psql` or a GUI like pgAdmin, DBeaver, or TablePlus.
