@@ -1,7 +1,7 @@
 # 📂 Portfolio Projects
 
 ## 🌟 Overview
-Welcome to my professional portfolio projects repository! This directory showcases a curated collection of my work, ranging from academic projects to professional implementations. Each project demonstrates my technical expertise, problem-solving abilities, and commitment to quality software development.
+Welcome to my acedemic portfolio projects repository! This directory showcases a curated collection of my work such as academic projects personal implementations. Each project demonstrates my technical expertise, problem-solving abilities, and commitment to quality software development.
 
 ## 🏗️ Project Categories
 
@@ -23,9 +23,6 @@ Welcome to my professional portfolio projects repository! This directory showcas
   Real-time multi-client chat application with secure messaging features.
 
 ### 💼 Professional Work
-- **Banking Infrastructure Transition**  
-  Documentation and implementation of a large-scale banking infrastructure migration.
-  
 - **FreeBSD Jail Template**  
   Secure and optimized FreeBSD jail templates for production environments.
 
@@ -51,17 +48,15 @@ Welcome to my professional portfolio projects repository! This directory showcas
 ## 📁 Project Structure
 
 ```
-Projects/
-├── Academic_Projects/     # University and course-related projects
-│   ├── Data_Structures_Algorithms_Lab/
-│   ├── HR_Database_System/
-│   ├── Inventory_Management_System/
-│   └── Student_Record_Manager/
-├── Network_Projects/      # Network programming projects
-│   └── Chat_Application/
-└── Professional_Work/     # Industry and professional projects
-    ├── Banking_Infrastructure_Transition/
-    └── FreeBSD_Jail_Template/
+Academic_Projects/     # University and course-related projects
+├── Data_Structures_Algorithms_Lab/
+├── HR_Database_System/
+├── Inventory_Management_System/
+└── Student_Record_Manager/
+Network_Projects/      # Network programming projects
+└── Chat_Application/
+Professional_Work/     # Industry and professional projects
+└── FreeBSD_Jail_Template/
 ```
 
 ## 🚀 Getting Started
@@ -137,17 +132,12 @@ pytest
 3. Address review comments
 4. Merge after approval
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
-
 ## 👨‍💻 Author
 
 **Timothy Harris (T-Minus36)**  
-- GitHub: [@yourusername](https://github.com/yourusername)  
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)  
-- Portfolio: [yourportfolio.com](https://yourportfolio.com)  
-- Email: your.email@example.com
+- GitHub: [@TMinus36](https://github.com/TMinus36)  
+- LinkedIn: [LinkedIn](https://www.linkedin.com/in/tminus36/)   
+- Email: tph@securednetworks.us
 
 ## 🙏 Acknowledgments
 
